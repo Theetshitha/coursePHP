@@ -48,6 +48,9 @@ session_start();
         <li><a href="contact.php">Contact</a></li>
         <?php if (isset($_SESSION['user_id'])): ?>
             <li><a href="dashboard.php">Dashboard</a></li>
+            <?php if ($_SESSION['email'] == 'theetshiAdmin@gmail.com'): ?>
+                <li><a href="user_detail.php">User Details</a></li>
+            <?php endif; ?>
             <li><a href="controller/LogoutController.php">Logout</a></li>
         <?php else: ?>
             <li><a href="login.php">Login</a></li>

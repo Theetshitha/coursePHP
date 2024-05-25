@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user_id;
             $_SESSION['name'] = $name;
             $_SESSION['email'] = $email;
-            $_SESSION['password'] = $password; 
             header('Location: ../dashboard.php');
         } else {
             echo "Invalid password.";
@@ -27,4 +26,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt->close();
 }
-?>
