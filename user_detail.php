@@ -61,7 +61,7 @@ $result = $callconn->query($query);
 <?php include 'view/partials/navbar.php'; ?>
 
 <div class="container">
-    <h2>User Details</h2>
+    <center><h2>User Details</h2></center>
     <table>
         <thead>
             <tr>
