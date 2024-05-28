@@ -9,10 +9,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['email'] != 'theetshiAdmin@gmail.c
 require_once 'model/DB.php';
 
 // Retrieve all user details
-$query = "SELECT id, name, email, course1, course2, course3, course4, course5, course6, course7, course8, course9, course10 FROM users";
+$query = "SELECT id, name, email FROM users";
 $result = $callconn->query($query);
 
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +22,43 @@ $result = $callconn->query($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hogwarts University - User Details</title>
     <style>
+          /* Style for the popup form */
+          .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #ffe6f0;
@@ -62,41 +101,86 @@ $result = $callconn->query($query);
 
 <div class="container">
     <center><h2>User Details</h2></center>
-    <table>
-        <thead>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+        <?php while($row = mysqli_fetch_assoc($result)): ?>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Courses</th>
+                <td><?php echo $row['id']; ?></td>
+                <td><?php echo $row['name']; ?></td>
+                <td><?php echo $row['email']; ?></td>
+                <td>
+                    <a href="register.php?id=<?php echo $row['id']; ?>" class="editBtn">Edit</a>
+                    <a href="controller/DeleteUserController.php?id=<?php echo $row['id']; ?>" class="deleteBtn">Delete</a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $row['id'] . "</td>";
-                    echo "<td>" . $row['name'] . "</td>";
-                    echo "<td>" . $row['email'] . "</td>";
-                    echo "<td>";
-                    for ($i = 1; $i <= 10; $i++) {
-                        if (!empty($row["course$i"])) {
-                            echo $row["course$i"] . "<br>";
-                        }
-                    }
-                    echo "</td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='4'>No users found.</td></tr>";
-            }
-            ?>
-        </tbody>
+        <?php endwhile; ?>
     </table>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <?php include 'register.php'; ?>
+        </div>
+    </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Edit button click event
+        $('.editBtn').click(function() {
+            var id = $(this).data('id');
+            $.ajax({
+                url: '/controller/UpdateUserController.php',
+                type: 'GET',
+                data: { id: id },
+                success: function(response) {
+                    var user = JSON.parse(response);
+                    // Populate register form with user data
+                    $('input[name="id"]').val(user.id);
+                    $('input[name="name"]').val(user.name);
+                    $('input[name="email"]').val(user.email);
+                    // Additional fields can be populated here
+                    $('#myModal').css("display", "block");
+                }
+            });
+        });
 
+        // Delete button click event
+        $('.deleteBtn').click(function() {
+            var id = $(this).data('id');
+            if (confirm('Are you sure you want to delete this record?')) {
+                $.ajax({
+                    url: '/controller/DeleteUserController.php',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function(response) {
+                        // Reload the page or update the table after deletion
+                        location.reload();
+                    }
+                });
+            }
+        });
 
+        // Modal close button click event
+        $('.close').click(function() {
+            $('#myModal').css("display", "none");
+        });
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+    });
+</script>
 </body>
 </html>

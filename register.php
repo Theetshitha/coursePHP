@@ -95,13 +95,15 @@
     <?php include 'view/partials/navbar.php'; ?>
 
     <main>
-        <form method="POST" action="controller/RegisterController.php" onsubmit="return validateForm()">
-            <input type="text" name="name" placeholder="Name" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
+    <form method="POST" action="<?php echo isset($_GET['id']) ? 'controller/UpdateUserController.php' : 'controller/RegisterController.php'; ?>">
+        <input type="hidden" name="id" value="<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>">
+        <input type="text" name="name" placeholder="Name" value="<?php echo isset($user['name']) ? $user['name'] : ''; ?>" required>
+        <input type="email" name="email" placeholder="Email" value="<?php echo isset($user['email']) ? $user['email'] : ''; ?>" required>
+        <input type="password" name="password" placeholder="Password" required>
 
             <div class="dropdown">
                 <button type="button">Select Courses</button>
+               
                 <div class="dropdown-content">
                     <label><input type="checkbox" name="courses[]" value="potions"> Potions</label>
                     <label><input type="checkbox" name="courses[]" value="transfiguration"> Transfiguration</label>
@@ -127,8 +129,8 @@
                 </div>
             </div>
 
-            <button type="submit">Register</button>
-        </form>
+            <button type="submit"><?php echo isset($_GET['id']) ? 'Update' : 'Register'; ?></button>
+    </form>
 
         <div class="login-link">
             <p>Already registered? <a href="login.php">Login</a></p>
